@@ -34,6 +34,7 @@ func main() {
 		}
 	}()
 	app.Models = data.New(client)
+	go app.GRPCLisener()
 	app.Serve()
 }
 
