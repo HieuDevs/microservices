@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Config struct {
 	WebPort int
+	Rabbit  *amqp.Connection
 }
 
 func (app *Config) Serve() {

@@ -74,6 +74,22 @@ services:
           memory: 512M
       restart_policy:
         condition: on-failure
+  listener-service:
+    build:
+      context: ./../listener-service
+      dockerfile: ./../listener-service/listener-service.dockerfile
+    restart: always
+    depends_on:
+      - rabbitmq
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
   postgres:
     image: "postgres:14.2"
     ports:
@@ -112,3 +128,12 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  rabbitmq:
+    image: "rabbitmq:3.9.14-alpine"
+    ports:
+      - "5672:5672"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
