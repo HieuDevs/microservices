@@ -1,6 +1,7 @@
 FRONT_END_BINARY=front-end
 BROKER_BINARY=broker-service
 AUTHENTICATION_BINARY=authentication-service
+LOGGER_BINARY=logger-service
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -9,7 +10,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_broker build_authentication
+up_build: build_broker build_authentication build_logger
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -34,10 +35,17 @@ build_authentication:
 	cd ../authentication-service && env GOOS=linux CGO_ENABLED=0 go build -a -installsuffix cgo -o ${AUTHENTICATION_BINARY} ./src
 	@echo "Done!"
 
+## build_logger: builds the logger binary as a linux executable
+build_logger:
+	@echo "Building logger binary..."
+	cd ../logger-service && env GOOS=linux CGO_ENABLED=0 go build -a -installsuffix cgo -o ${LOGGER_BINARY} ./src
+	@echo "Done!"
+
+
 ## build_front: builds the frone end binary
 build_front:
 	@echo "Building front end binary..."
-	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
+	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./src/web
 	@echo "Done!"
 
 ## start: starts the front end

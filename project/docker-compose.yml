@@ -15,7 +15,25 @@ services:
           memory: 512M
       restart_policy:
         condition: on-failure
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    restart: always
+    depends_on:
+      - mongo
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
   authentication-service:
+    depends_on:
+      - postgres
     build:
       context: ./../authentication-service
       dockerfile: ./../authentication-service/authentication-service.dockerfile
@@ -27,7 +45,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-
       resources:
         limits:
           cpus: "0.50"
@@ -47,3 +64,20 @@ services:
       POSTGRES_DB: users
     volumes:
       - ./db-data/postgres/:/var/lib/postgresql/data/
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: logs
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+    volumes:
+      - ./db-data/mongo/:/data/db/

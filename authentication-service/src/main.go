@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -25,14 +24,10 @@ func main() {
 		DB:      db,
 		Models:  data.New(db),
 	}
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", app.WebPort),
-		Handler: app.Router(),
-	}
-	err := srv.ListenAndServe()
-	if err != nil {
-		log.Fatalf("authencation service failed to start: %v", err)
-	}
+
+	// Start the server
+	app.Serve()
+
 }
 
 func openDB(dsn string) (*sql.DB, error) {

@@ -21,6 +21,6 @@ func (app *Config) Router() http.Handler {
 			},
 		),
 	)
-
+	mux.Post("/authenticate", app.Authenticate)
 	return mux
 }
