@@ -51,6 +51,29 @@ services:
           memory: 512M
       restart_policy:
         condition: on-failure
+  mail-service:
+    build:
+      context: ./../mail-service
+      dockerfile: ./../mail-service/mail-service.dockerfile
+    restart: always
+    environment:
+      MAIL_DOMAIN: "localhost"
+      MAIL_HOST: "mailhog"
+      MAIL_PORT: "1025"
+      MAIL_ENCRYPTION: "none"
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROMNAME: "Lubu"
+      MAIL_FROMADDRESS: "lubu@threekingdoms.com"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
   postgres:
     image: "postgres:14.2"
     ports:
@@ -81,3 +104,11 @@ services:
           memory: 512M
     volumes:
       - ./db-data/mongo/:/data/db/
+  mailhog:
+    image: "mailhog/mailhog"
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    deploy:
+      mode: replicated
+      replicas: 1
